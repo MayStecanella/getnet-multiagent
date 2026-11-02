@@ -1,0 +1,119 @@
+[
+  {
+    "id": "cancelamento_vendas",
+    "name": "Cancelamento de vendas",
+    "description": "Cancelar uma venda feita na maquininha ou online.",
+    "channels": [
+      "portal",
+      "app"
+    ]
+  },
+  {
+    "id": "antecipacao",
+    "name": "Antecipação de recebíveis",
+    "description": "Receber antes o valor de vendas que ainda vão cair, mediante uma taxa.",
+    "channels": [
+      "portal",
+      "app"
+    ]
+  },
+  {
+    "id": "domicilio_bancario",
+    "name": "Alteração de domicílio bancário",
+    "description": "Trocar a conta bancária onde caem os recebimentos.",
+    "channels": [
+      "portal",
+      "app"
+    ]
+  },
+  {
+    "id": "chargeback",
+    "name": "Chargeback",
+    "description": "Acompanhar ou contestar uma venda que o portador do cartão não reconheceu.",
+    "channels": [
+      "portal",
+      "app"
+    ]
+  },
+  {
+    "id": "habilitacao_pix",
+    "name": "Habilitação de Pix",
+    "description": "Ativar o recebimento de vendas por Pix.",
+    "channels": [
+      "portal",
+      "app"
+    ]
+  },
+  {
+    "id": "alteracao_endereco",
+    "name": "Alteração de endereço",
+    "description": "Atualizar o endereço cadastrado do estabelecimento.",
+    "channels": [
+      "portal",
+      "app"
+    ]
+  },
+  {
+    "id": "emissao_boleto",
+    "name": "Emissão de boleto",
+    "description": "Emitir boleto, por exemplo de aluguel da máquina ou débitos pendentes.",
+    "channels": [
+      "portal",
+      "app"
+    ]
+  },
+  {
+    "id": "instalacao_adicional",
+    "name": "Solicitação de instalação adicional",
+    "description": "Pedir mais uma maquininha para o estabelecimento.",
+    "channels": [
+      "portal",
+      "app"
+    ]
+  },
+  {
+    "id": "manutencao",
+    "name": "Solicitação de manutenção",
+    "description": "Pedir reparo ou troca de uma maquininha com defeito.",
+    "channels": [
+      "portal",
+      "app"
+    ]
+  },
+  {
+    "id": "bobinas",
+    "name": "Solicitação de bobinas",
+    "description": "Pedir bobinas (rolos de papel) para a maquininha.",
+    "channels": [
+      "portal",
+      "app"
+    ]
+  },
+  {
+    "id": "representante_legal",
+    "name": "Alteração de representante legal",
+    "description": "Atualizar quem responde legalmente pela empresa no cadastro.",
+    "channels": [
+      "portal",
+      "app"
+    ]
+  },
+  {
+    "id": "get_tap",
+    "name": "Habilitação do Get Tap",
+    "description": "Ativar o Get Tap, para vender por aproximação no celular.",
+    "channels": [
+      "portal",
+      "app"
+    ]
+  },
+  {
+    "id": "extrato_eletronico",
+    "name": "Habilitação do extrato eletrônico",
+    "description": "Ativar o envio do extrato de vendas e recebimentos em formato eletrônico.",
+    "channels": [
+      "portal",
+      "app"
+    ]
+  }
+]

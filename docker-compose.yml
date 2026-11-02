@@ -1,0 +1,11 @@
+services:
+  api:
+    build: .
+    env_file: .env
+    ports:
+      - "8000:8000"
+    volumes:
+      - getnet-data:/app/var   # índice Chroma, base mock e registro de atendimentos
+
+volumes:
+  getnet-data:
