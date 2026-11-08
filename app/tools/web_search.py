@@ -55,7 +55,8 @@ def _post(payload: dict) -> dict | None:
         return None
 
 
-def web_search(query: str, topic: str = "general", recency: str = "any", max_results: int = 6) -> SearchResponse:
+def web_search(query: str, topic: str = "general", recency: str = "any", max_results: int = 6,
+               newest_first: bool = True) -> SearchResponse:
     """Busca via Tavily. Sem chave configurada ou em erro, devolve resposta vazia.
 
     Para assuntos atuais (topic="news" com janela de tempo), se a janela não trouxer nada,
@@ -79,6 +80,6 @@ def web_search(query: str, topic: str = "general", recency: str = "any", max_res
         if raw and i < RAW_PAGES:  # tabelas e placares completos das páginas mais relevantes
             content = f"{content}\n\nTrecho da página:\n{raw[:RAW_CHARS]}"
         results.append(SearchResult(r.get("title", ""), r.get("url", ""), content, r.get("published_date", "") or ""))
-    # mais recentes primeiro (os sem data ficam no fim, na ordem de relevância)
-    results.sort(key=lambda r: r.published or "", reverse=True)
+    if newest_first:  # mais recentes primeiro (os sem data ficam no fim, na ordem de relevância)
+        results.sort(key=lambda r: r.published or "", reverse=True)
     return SearchResponse(results, data.get("answer") or "")

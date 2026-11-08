@@ -7,7 +7,7 @@ A solução é uma API conteinerizada com três telas:
 - **Especialista:** fila de transbordo (quando o cliente diz que não resolveu), histórico e o que a IA já fez.
 - **Qualidade:** DNA por pilar da IA e dos especialistas, assertividade por recontato, transbordo e avaliação em lote off-line por CSV.
 
-   **Vídeo de apresentação:** _(link)_ · **Versão publicada:** https://getnet-multiagent.onrender.com (acesso com código; solicite à autora)
+**Vídeo de apresentação:** _(link)_ · **Versão publicada:** https://getnet-multiagent.onrender.com (acesso com código; solicite à autora)
 
 ## Sumário
 
@@ -141,10 +141,10 @@ Todos os prompts estão em `app/prompts/__init__.py`. Toda saída estruturada é
 
 Perguntas como "qual o placar do último jogo do Corinthians?" ou "como está a classificação do Brasileirão?" dependem do dia em que são feitas. O agente de busca:
 
-1. **Prepara a busca com a data de hoje** (horário de Brasília): o LLM reescreve a pergunta com nomes completos e mês e ano ("Corinthians resultado último jogo placar novembro 2026") e escolhe o tipo: notícias (jogos, placares, classificação, notícias) ou geral (clima, câmbio, fatos).
+1. **Prepara a busca com a data de hoje** (horário de Brasília): o LLM reescreve a pergunta com nomes completos e mês e ano ("Corinthians resultado último jogo placar novembro 2026") e identifica o tipo: **resultado** (o que já aconteceu: placar, quem ganhou), **agenda** (o que vai acontecer: próximo jogo, calendário), **classificação** ou outro (clima, câmbio, notícias, fatos).
 2. **Busca na Tavily** em profundidade avançada, com janela de tempo para assuntos recentes (última semana) e o conteúdo das 3 páginas mais relevantes, para que tabelas de classificação e placares completos cheguem ao LLM. Se a janela não trouxer nada, repete sem a janela.
 3. **Ordena do mais recente para o mais antigo** e passa ao LLM a data de publicação de cada resultado.
-4. **Responde** com o resultado mais recente, sem misturar datas: no placar, os dois times, o placar, a competição e a data; na classificação, a rodada e as primeiras posições com os pontos (e a posição do time citado). Sempre cita a fonte. Se os resultados não mostrarem a informação mais recente, diz isso e indica onde conferir.
+4. **Responde** conforme o tipo. Em agenda, a busca procura páginas de calendário, sem janela de tempo e sem reordenar por publicação, e a resposta escolhe a data mais próxima a partir de hoje (não o jogo mais comentado), citando também os jogos seguintes. Em resultado, usa o mais recente antes de hoje, sem misturar datas: no placar, os dois times, o placar, a competição e a data; na classificação, a rodada e as primeiras posições com os pontos (e a posição do time citado). Sempre cita a fonte. Se os resultados não mostrarem a informação mais recente, diz isso e indica onde conferir.
 
 Palpites e opiniões ("qual time vai ganhar?") são fora de escopo. A busca na internet nunca transfere para o especialista.
 
@@ -293,7 +293,7 @@ O repositório traz um `render.yaml` (Blueprint) que cria o serviço a partir do
    Faça commit e push da pasta `data/index`.
 2. No [Render](https://render.com), entre com o GitHub e clique em **New + → Blueprint**. Escolha este repositório.
 3. Preencha `OPENAI_API_KEY`, `TAVILY_API_KEY` e `ACCESS_CODE` (o código que as telas e a API vão pedir) e clique em **Apply**.
-4. Ao fim do deploy, o endereço fica em `https://getnet-multiagent-xxxx.onrender.com`.
+4. Ao fim do deploy, o endereço fica em `https://getnet-multiagent.onrender.com`.
 
 Pontos do plano gratuito: o serviço "dorme" após 15 minutos sem acesso e leva cerca de 1 minuto para acordar; conversas e avaliações ficam em SQLite local e são zeradas quando o serviço reinicia. Em produção, o próximo passo seria um banco gerenciado (Postgres). O uso é protegido por código de acesso, limite por minuto e teto diário de mensagens.
 

@@ -41,7 +41,7 @@ def test_query_plan_carries_today(monkeypatch):
     class Spy:
         def structured(self, system, user, schema):
             seen["system"] = system
-            return schema(query="Corinthians placar último jogo novembro 2026", topic="news", recency="week")
+            return schema(kind="resultado", query="Corinthians placar último jogo novembro 2026", topic="news", recency="week")
 
     monkeypatch.setattr(web, "get_llm", lambda: Spy())
     plan = web.plan_query("placar do último jogo do Corinthians", datetime(2026, 11, 8, 9, 0, tzinfo=web.BRT))
@@ -127,3 +127,39 @@ def test_health_tells_real_from_simulated(monkeypatch):
     monkeypatch.setattr(handlers, "settings", replace(settings, offline_mode=False, tavily_api_key=""))
     h = handlers.health()
     assert h["modo"] == "real" and h["checks"]["busca_web"] is False and h["status"] == "incompleto"
+
+
+def test_next_game_is_agenda_keeps_relevance_order_and_rules(monkeypatch):
+    seen = {}
+
+    def fake_search(q, **kw):
+        seen["kw"] = kw
+        return SearchResponse([SearchResult("Agenda", "https://lance.com.br/agenda", "18/11 x Grêmio; 28/11 final")])
+
+    class Spy:
+        def structured(self, system, user, schema):
+            return schema(kind="agenda", query="Palmeiras próximos jogos calendário novembro 2026",
+                          topic="general", recency="any")
+
+        def text(self, system, user):
+            seen["system"] = system
+            return "Olá! O próximo jogo é em 18/11. Fonte: lance.com.br. Até logo!"
+
+    monkeypatch.setattr(web, "web_search", fake_search)
+    monkeypatch.setattr(web, "get_llm", lambda: Spy())
+    web.web_node({"masked_message": "Quando é o próximo jogo do Palmeiras?"})
+    assert seen["kw"]["newest_first"] is False and seen["kw"]["recency"] == "any"
+    assert "agenda" in seen["system"] and "MAIS PRÓXIMA" in seen["system"] and "comentado" in seen["system"]
+
+
+def test_agenda_search_does_not_reorder_by_publication(online, monkeypatch):
+    monkeypatch.setattr(ws, "_post", lambda p: {"results": [
+        {"title": "calendário", "url": "a", "content": "", "published_date": ""},
+        {"title": "notícia da final", "url": "b", "content": "", "published_date": "2026-11-07"},
+    ]})
+    assert [r.title for r in ws.web_search("x", newest_first=False).results] == ["calendário", "notícia da final"]
+
+
+def test_offline_plan_detects_agenda():
+    plan = web.plan_query("Quando é o próximo jogo do Palmeiras?", web.now_brt())
+    assert plan.kind == "agenda" and plan.recency == "any"

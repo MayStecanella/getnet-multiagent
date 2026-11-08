@@ -105,8 +105,11 @@ class FakeLLM:
 
     def _WebQuery(self, _msg, user):
         question = _norm(re.search(r"<pergunta>(.*?)</pergunta>", user, re.S).group(1))
+        if _has(question, "proximo", "quando e", "calendario", "agenda"):
+            return {"kind": "agenda", "query": question[:120], "topic": "general", "recency": "any"}
         news = _has(question, *SPORTS_WORDS, "noticia", "eleic")
-        return {"query": question[:120], "topic": "news" if news else "general",
+        kind = "classificacao" if _has(question, "classificacao", "posicao", "lider") else "resultado" if news else "outro"
+        return {"kind": kind, "query": question[:120], "topic": "news" if news else "general",
                 "recency": "week" if news else "any"}
 
     def _Queries(self, msg, _):
