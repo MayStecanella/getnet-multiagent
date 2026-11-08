@@ -6,7 +6,7 @@ from typing import Annotated, Literal, TypedDict
 
 from pydantic import BaseModel, Field
 
-Triage = Literal["adquirencia", "web", "dado_sensivel", "injection", "fora_de_escopo"]
+Triage = Literal["adquirencia", "web", "dado_sensivel", "injection", "fora_de_escopo", "humano"]
 Route = Literal["knowledge", "self_service", "support"]
 
 

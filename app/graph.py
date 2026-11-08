@@ -1,6 +1,7 @@
 """Orquestração: grafo LangGraph.
 
 guardrails ──┬─ dado_sensivel / injection / fora_de_escopo ──> END (resposta padrão)
+             ├─ humano (pedido de atendente) ──> END (transbordo feito pelo app.service)
              ├─ web ──> web_search ──> END
              └─ adquirencia ──> router ──┬─> knowledge ────┐
                                          ├─> self_service ─┼─> composer ──> END

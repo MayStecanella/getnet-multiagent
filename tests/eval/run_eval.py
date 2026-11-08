@@ -32,8 +32,8 @@ def main() -> int:
 
     rows, route_hits = [], 0
     for message, triage, agents, tools in SCENARIOS:
-        r = handle_message(message, "cliente1988")
-        ev = evaluate(r.trace_id, r.masked_message, r.response, r.sources) if not r.error else None
+        r = handle_message(message, "cliente1988", channel="eval")
+        ev = evaluate(r.trace_id, r.masked_message, r.response, r.sources, save=False) if not r.error else None
         ok = r.triage == triage and agents_match(r.agents, agents) and all(t in r.tools_used for t in tools)
         route_hits += ok
         rows.append({"message": message, "expected": [triage, agents], "got": [r.triage, r.agents],
@@ -41,8 +41,8 @@ def main() -> int:
 
     recontacts = []
     for first, second in RECONTACT_PAIRS:
-        a = handle_message(first, "cliente1988")
-        handle_message(second, "cliente1988")
+        a = handle_message(first, "cliente1988", channel="eval")
+        handle_message(second, "cliente1988", channel="eval")
         recontacts.append({"first": first, "second": second,
                            "detected": bool(get_interaction(a.trace_id)["recontacted"])})
 

@@ -3,6 +3,8 @@
 Mede duas coisas:
 - assertividade: pelo recontato no mesmo tema (aplicado em observability.store.save_interaction);
 - DNA Getnet: LLM-as-judge (modelo separado do gerador), 0 a 25 por pilar, total 0 a 100.
+
+Avalia tanto as respostas da IA quanto as dos especialistas humanos, com a mesma régua.
 """
 from __future__ import annotations
 
@@ -33,7 +35,8 @@ class DnaEvaluation(BaseModel):
     dado_sensivel: bool
 
 
-def evaluate(trace_id: str, message: str, response: str, sources: list[str]) -> dict:
+def evaluate(trace_id: str, message: str, response: str, sources: list[str], *, author: str = "ia",
+             agent_name: str | None = None, conversation_id: str | None = None, save: bool = True) -> dict:
     user = (
         f"<mensagem_cliente>{message}</mensagem_cliente>\n"
         f"<fontes_disponiveis>{', '.join(sources) or 'nenhuma'}</fontes_disponiveis>\n"
@@ -49,9 +52,12 @@ def evaluate(trace_id: str, message: str, response: str, sources: list[str]) -> 
         # o alerta de dado sensível combina o juiz com a regra determinística
         "alert_dado_sensivel": ev.dado_sensivel or bool(find_sensitive(response)),
     }
-    save_evaluation(trace_id, result)
-    log_event(log, "avaliacao_dna", trace_id=trace_id, total=result["total"],
-              alert_sem_fonte=result["alert_sem_fonte"], alert_dado_sensivel=result["alert_dado_sensivel"])
+    if save:
+        save_evaluation(trace_id, result, author=author, agent_name=agent_name, conversation_id=conversation_id,
+                        trace_id=trace_id if author == "ia" else None, message=message, response=response)
+        log_event(log, "avaliacao_dna", eval_id=trace_id, author=author, agent_name=agent_name,
+                  total=result["total"], alert_sem_fonte=result["alert_sem_fonte"],
+                  alert_dado_sensivel=result["alert_dado_sensivel"])
     return result
 
 

@@ -1,0 +1,35 @@
+# Blueprint do Render: um serviço web que roda o Dockerfile deste repositório.
+# No Render: New + > Blueprint > escolha este repositório > preencha as variáveis marcadas como sync: false.
+services:
+  - type: web
+    name: getnet-multiagent
+    runtime: docker
+    plan: free
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      # segredos: preenchidos no painel do Render, nunca no repositório
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: TAVILY_API_KEY
+        sync: false
+      - key: ACCESS_CODE
+        sync: false
+      # índice RAG pré-construído e versionado em data/index (o plano gratuito não tem disco
+      # persistente; assim o serviço sobe em segundos, sem refazer o crawl)
+      # funcionamento real: LLM, RAG e busca na internet de verdade (nunca simulado)
+      - key: OFFLINE_MODE
+        value: "false"
+      - key: SKIP_INGEST
+        value: "true"
+      - key: CHROMA_DIR
+        value: /app/data/index
+      - key: DATA_DIR
+        value: /app/var
+      # proteção dos créditos do LLM
+      - key: RATE_LIMIT_PER_MINUTE
+        value: "12"
+      - key: DAILY_MESSAGE_CAP
+        value: "500"
+      - key: BATCH_MAX_ROWS
+        value: "50"

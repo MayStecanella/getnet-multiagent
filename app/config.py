@@ -59,6 +59,19 @@ class Settings:
 
     # Qualidade
     recontact_window_hours: int = field(default_factory=lambda: int(_env("RECONTACT_WINDOW_HOURS", "24")))
+    batch_max_rows: int = field(default_factory=lambda: int(_env("BATCH_MAX_ROWS", "100")))
+
+    # Transbordo: na N-ésima pergunta sobre o mesmo tema na conversa, vai para o especialista
+    handoff_after_attempts: int = field(default_factory=lambda: int(_env("HANDOFF_AFTER_ATTEMPTS", "4")))
+
+    # Modo off-line: LLM, RAG e busca web simulados (sem chave e sem internet)
+    offline_mode: bool = field(default_factory=lambda: _env("OFFLINE_MODE", "false").lower() == "true")
+
+    # Proteção da versão publicada: código de acesso (vazio = sem proteção) e limites de uso
+    access_code: str = field(default_factory=lambda: _env("ACCESS_CODE", ""))
+    rate_limit_per_minute: int = field(default_factory=lambda: int(_env("RATE_LIMIT_PER_MINUTE", "12")))
+    daily_message_cap: int = field(default_factory=lambda: int(_env("DAILY_MESSAGE_CAP", "500")))
+    chroma_dir_override: str = field(default_factory=lambda: _env("CHROMA_DIR", ""))
 
     # Canais de autosserviço
     portal_url: str = field(default_factory=lambda: _env("PORTAL_URL", "https://minhaconta.getnet.com.br/login"))
@@ -71,11 +84,11 @@ class Settings:
 
     @property
     def chroma_dir(self) -> Path:
-        return self.data_dir / "chroma"
+        return Path(self.chroma_dir_override) if self.chroma_dir_override else self.data_dir / "chroma"
 
     @property
     def db_path(self) -> Path:
-        return self.data_dir / "app.db"
+        return self.data_dir / "atendimento.db"
 
 
 settings = Settings()

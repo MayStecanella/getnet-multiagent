@@ -64,7 +64,7 @@ def test_self_service_without_match_still_shows_channels():
 def test_support_uses_settlement_tool():
     out = support_node(_state("Quando cai o dinheiro das vendas de ontem?"))["outputs"][0]
     assert out.tools_used == ["get_settlements"]
-    assert "net_by_date" in out.content
+    assert "R$" in out.content and "plano" in out.content
 
 
 def test_support_uses_transactions_and_terminal_for_decline():

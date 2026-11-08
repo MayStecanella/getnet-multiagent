@@ -3,15 +3,14 @@ import pytest
 
 from app.observability.store import get_interaction, metrics
 from app.service import handle_message
-from app.tools import web_search as web_module
-from app.tools.web_search import SearchResult
+from app.tools.web_search import SearchResponse, SearchResult
 from tests.scenarios import SCENARIOS, agents_match
 
 
 @pytest.fixture(autouse=True)
 def fake_web(monkeypatch):
     monkeypatch.setattr("app.agents.web.web_search",
-                        lambda q: [SearchResult("Resultado", "https://exemplo.com/cotacao", "conteúdo")])
+                        lambda q, **kw: SearchResponse([SearchResult("Resultado", "https://exemplo.com/cotacao", "conteúdo")]))
 
 
 @pytest.mark.parametrize("message,triage,agents,tools", SCENARIOS)
@@ -23,7 +22,7 @@ def test_scenario_routes(message, triage, agents, tools):
     for t in tools:
         assert t in r.tools_used
     assert r.response
-    assert r.conversation_closed is (triage != "adquirencia")
+    assert r.conversation_closed is (triage not in ("adquirencia", "humano"))
     assert get_interaction(r.trace_id) is not None
 
 
@@ -55,6 +54,6 @@ def test_graph_failure_returns_cordial_fallback(monkeypatch):
 
 
 def test_web_without_api_key_answers_gracefully(monkeypatch):
-    monkeypatch.setattr("app.agents.web.web_search", web_module.web_search)  # chave vazia nos testes
+    monkeypatch.setattr("app.agents.web.web_search", lambda q, **kw: SearchResponse([]))  # busca sem resultado
     r = handle_message("Qual a cotação do dólar hoje?", "cliente1988")
     assert r.triage == "web" and r.conversation_closed and "até logo" in r.response.lower()

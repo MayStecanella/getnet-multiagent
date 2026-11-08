@@ -80,7 +80,12 @@ _retriever: Retriever | None = None
 def get_retriever() -> Retriever:
     global _retriever
     if _retriever is None:
-        _retriever = ChromaRetriever()
+        if settings.offline_mode:
+            from app.offline import FakeRetriever
+
+            _retriever = FakeRetriever()
+        else:
+            _retriever = ChromaRetriever()
     return _retriever
 
 

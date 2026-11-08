@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Especialista · Atendimento Getnet</title>
+  <link rel="stylesheet" href="/static/app.css">
+  <style>
+    .desk { display: grid; grid-template-columns: 300px minmax(0, 1fr) 340px; gap: 16px; padding: 16px;
+      height: calc(100vh - 56px); }
+    .panel { display: flex; flex-direction: column; min-height: 0; }
+    .scroll { overflow-y: auto; flex: 1; }
+    .q-group { padding: 10px 14px 4px; font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .4px; }
+    .q-item { display: grid; gap: 4px; padding: 10px 14px; border-left: 3px solid transparent; cursor: pointer;
+      background: none; border-top: none; border-right: none; border-bottom: 1px solid var(--line); text-align: left; width: 100%; }
+    .q-item:hover { background: var(--bg); }
+    .q-item.active { background: var(--red-soft); border-left-color: var(--red); }
+    .q-top { display: flex; align-items: center; gap: 6px; }
+    .q-top strong { font-size: 14px; }
+    .q-top .wait { margin-left: auto; font-size: 12px; color: var(--muted); }
+    .q-msg { font-size: 13px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .conv-head { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-bottom: 1px solid var(--line); }
+    .conv-head .actions { margin-left: auto; display: flex; gap: 6px; }
+    .thread { padding: 18px 16px; display: flex; flex-direction: column; gap: 12px; }
+    .bubble.cliente { background: var(--card); color: var(--ink); border-color: var(--line); border-bottom-left-radius: 4px; border-bottom-right-radius: 14px; }
+    .bubble.humano { border-bottom-right-radius: 4px; border-bottom-left-radius: 14px; }
+    .composer { border-top: 1px solid var(--line); padding: 12px; display: grid; gap: 8px; }
+    .composer textarea { resize: vertical; border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; min-height: 76px; }
+    .composer .row { display: flex; gap: 8px; align-items: center; }
+    .ctx section { padding: 14px 16px; border-bottom: 1px solid var(--line); display: grid; gap: 6px; }
+    .ctx section:last-child { border-bottom: none; }
+    .ctx h3 { margin: 0; font-size: 12px; text-transform: uppercase; letter-spacing: .4px; color: var(--muted); }
+    .ctx .chips { display: flex; flex-wrap: wrap; gap: 4px; }
+    .suggestion { white-space: pre-wrap; font-size: 13px; background: var(--ia-soft); border-radius: 10px; padding: 10px 12px; max-height: 220px; overflow-y: auto; }
+    .dna-list { margin: 0; padding-left: 18px; font-size: 13px; color: var(--muted); }
+    .pillar { display: grid; grid-template-columns: 82px 1fr 34px; align-items: center; gap: 8px; font-size: 13px; }
+    .just { font-size: 12px; color: var(--muted); margin: 0 0 0 90px; }
+    .big { font-size: 28px; font-weight: 800; letter-spacing: -.5px; }
+    @media (max-width: 1100px) { .desk { grid-template-columns: 260px minmax(0, 1fr); height: auto; } .ctx-panel { grid-column: 1 / -1; } }
+    @media (max-width: 720px) { .desk { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/"><strong>Getnet</strong><span>Mesa do especialista</span></a>
+    <span id="offline-tag" class="tag warn" hidden>Modo off-line: respostas simuladas</span>
+    <nav aria-label="Telas">
+      <a href="/cliente">Cliente</a>
+      <a href="/especialista">Especialista</a>
+      <a href="/qualidade">Qualidade</a>
+    </nav>
+    <span class="whoami"><span id="whoami"></span><button class="btn ghost" id="logout" type="button">Sair</button></span>
+  </header>
+
+  <main class="desk">
+    <section class="card panel" aria-label="Fila">
+      <div class="card-head"><h2>Fila de transbordo</h2><span class="tag" id="q-count">0</span></div>
+      <div class="scroll" id="queue"><div class="empty">Nenhuma conversa na fila.</div></div>
+    </section>
+
+    <section class="card panel" aria-label="Conversa">
+      <div id="no-conv" class="empty" style="margin:auto">Escolha uma conversa da fila para ver o histórico.</div>
+      <div id="conv" class="panel" style="flex:1" hidden>
+        <div class="conv-head">
+          <div>
+            <strong id="c-user"></strong>
+            <div class="small muted" id="c-status"></div>
+          </div>
+          <div class="actions">
+            <button class="btn primary" id="btn-claim" type="button">Assumir atendimento</button>
+            <button class="btn" id="btn-close" type="button">Encerrar</button>
+          </div>
+        </div>
+        <div class="scroll"><div class="thread" id="thread"></div></div>
+        <form class="composer" id="composer">
+          <textarea id="reply" placeholder="Escreva sua resposta ao cliente" aria-label="Resposta" maxlength="4000"></textarea>
+          <div class="row">
+            <button class="btn" id="btn-suggest" type="button">Usar sugestão da IA</button>
+            <span class="error-text" id="error" role="alert" style="flex:1"></span>
+            <button class="btn primary" id="btn-send" type="submit">Enviar</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <aside class="card panel ctx-panel" aria-label="Contexto">
+      <div class="card-head"><h2>Contexto</h2></div>
+      <div class="scroll ctx" id="ctx"><div class="empty">O contexto da conversa aparece aqui.</div></div>
+    </aside>
+  </main>
+
+  <script src="/static/common.js"></script>
+  <script src="/static/especialista.js"></script>
+</body>
+</html>

@@ -2,10 +2,13 @@ services:
   api:
     build: .
     env_file: .env
+    environment:
+      # permite ligar o modo off-line sem editar o .env: OFFLINE_MODE=true docker compose up
+      OFFLINE_MODE: ${OFFLINE_MODE:-false}
     ports:
       - "8000:8000"
     volumes:
-      - getnet-data:/app/var   # índice Chroma, base mock e registro de atendimentos
+      - getnet-data:/app/var   # índice Chroma, base mock, conversas e avaliações
 
 volumes:
   getnet-data:

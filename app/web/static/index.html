@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Atendimento multiagente Getnet</title>
+  <link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/"><strong>Getnet</strong><span>Atendimento multiagente</span></a>
+    <span id="offline-tag" class="tag warn" hidden>Modo off-line: respostas simuladas</span>
+    <nav aria-label="Telas">
+      <a href="/cliente">Cliente</a>
+      <a href="/especialista">Especialista</a>
+      <a href="/qualidade">Qualidade</a>
+    </nav>
+  </header>
+  <main class="home">
+    <h1>Atendimento com agentes de IA, especialistas e qualidade no mesmo fluxo</h1>
+    <p class="lead">A IA atende primeiro, no DNA Getnet. Quando o cliente pede um atendente ou volta ao
+      mesmo assunto, a conversa vai para um especialista. A qualidade avalia IA e especialistas com a
+      mesma régua.</p>
+    <div class="home-grid">
+      <a class="card home-card" href="/cliente">
+        <span class="tag red">Cliente</span>
+        <h2>Conversar com o atendimento</h2>
+        <p>Chat com a IA: produtos, dados da conta, autosserviço e transbordo para um especialista.</p>
+      </a>
+      <a class="card home-card" href="/especialista">
+        <span class="tag ok">Especialista</span>
+        <h2>Fila de transbordo</h2>
+        <p>Assumir conversas, ver o que a IA já fez, usar a sugestão da IA e responder ao cliente.</p>
+      </a>
+      <a class="card home-card" href="/qualidade">
+        <span class="tag ia">Qualidade</span>
+        <h2>DNA Getnet e assertividade</h2>
+        <p>Notas por pilar da IA e dos especialistas, recontato, transbordo e avaliação em lote por CSV.</p>
+      </a>
+    </div>
+    <p class="home-foot">API: <a href="/docs">documentação interativa</a> · <code>POST /chat</code> ·
+      <code>GET /metrics</code> · <code>GET /health</code></p>
+  </main>
+  <script src="/static/common.js"></script>
+  <script>loadConfig();</script>
+</body>
+</html>

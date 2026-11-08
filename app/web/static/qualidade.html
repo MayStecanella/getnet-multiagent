@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Qualidade · Atendimento Getnet</title>
+  <link rel="stylesheet" href="/static/app.css">
+  <style>
+    .quality { max-width: 1240px; margin: 0 auto; padding: 20px 16px 48px; display: grid; gap: 16px; }
+    .page-head { display: flex; align-items: flex-end; gap: 12px; flex-wrap: wrap; }
+    .page-head h1 { margin: 0; font-size: 22px; letter-spacing: -.3px; }
+    .page-head .right { margin-left: auto; font-size: 13px; color: var(--muted); }
+    .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+    .kpi { padding: 14px 16px; display: grid; gap: 2px; }
+    .kpi .label { font-size: 13px; color: var(--muted); }
+    .kpi .value { font-size: 26px; font-weight: 800; letter-spacing: -.5px; }
+    .kpi .hint { font-size: 12px; color: var(--faint); }
+    .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 16px; }
+    .pillar-row { display: grid; grid-template-columns: 90px 1fr; gap: 10px; align-items: center; padding: 6px 0; }
+    .pillar-bars { display: grid; gap: 4px; }
+    .pillar-bar { display: grid; grid-template-columns: 1fr 44px; gap: 8px; align-items: center; font-size: 12px; }
+    .legend { display: flex; gap: 14px; font-size: 12px; color: var(--muted); }
+    .legend span::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+    .legend .l-ia::before { background: var(--ia); }
+    .legend .l-h::before { background: var(--ok); }
+    .stat-row { display: grid; grid-template-columns: 1fr 120px 48px; gap: 10px; align-items: center; font-size: 14px; padding: 5px 0; }
+    .filters { display: flex; gap: 6px; align-items: center; margin-left: auto; flex-wrap: wrap; }
+    .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+    .seg button { border: none; background: var(--card); padding: 6px 12px; cursor: pointer; font-size: 13px; }
+    .seg button.on { background: var(--red-soft); color: var(--red-dark); font-weight: 700; }
+    .ev-row { cursor: pointer; }
+    .ev-row:hover td { background: var(--bg); }
+    .ev-detail td { background: #fafafa; }
+    .ev-detail .boxes { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .ev-detail .text { white-space: pre-wrap; font-size: 13px; background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; max-height: 240px; overflow-y: auto; }
+    .ev-detail h4 { margin: 0 0 6px; font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .4px; }
+    .mini { font-variant-numeric: tabular-nums; color: var(--muted); font-size: 13px; white-space: nowrap; }
+    .upload { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; }
+    .progress { height: 8px; background: var(--bg); border-radius: 999px; overflow: hidden; flex: 1; min-width: 160px; }
+    .progress span { display: block; height: 100%; background: var(--red); transition: width .3s; }
+    .modes { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-bottom: 14px; }
+    .mode { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; font-size: 13px; }
+    .mode strong { display: block; margin-bottom: 2px; }
+    .runs { display: flex; gap: 6px; flex-wrap: wrap; }
+    @media (max-width: 720px) { .modes, .ev-detail .boxes { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/"><strong>Getnet</strong><span>Qualidade do atendimento</span></a>
+    <span id="offline-tag" class="tag warn" hidden>Modo off-line: respostas simuladas</span>
+    <nav aria-label="Telas">
+      <a href="/cliente">Cliente</a>
+      <a href="/especialista">Especialista</a>
+      <a href="/qualidade">Qualidade</a>
+    </nav>
+  </header>
+
+  <main class="quality">
+    <div class="page-head">
+      <h1>Qualidade: DNA Getnet e assertividade</h1>
+      <span class="right" id="updated"></span>
+    </div>
+
+    <section class="kpis" id="kpis" aria-label="Indicadores"></section>
+
+    <div class="grid2">
+      <section class="card">
+        <div class="card-head"><h2>DNA Getnet por pilar</h2>
+          <div class="legend" style="margin-left:auto"><span class="l-ia">IA</span><span class="l-h">Especialistas</span></div></div>
+        <div class="card-body" id="pillars"></div>
+      </section>
+      <section class="card">
+        <div class="card-head"><h2>Transbordo e triagem</h2></div>
+        <div class="card-body" id="flow"></div>
+      </section>
+    </div>
+
+    <div class="grid2">
+      <section class="card">
+        <div class="card-head"><h2>Especialistas</h2></div>
+        <div class="card-body" id="agents"></div>
+      </section>
+      <section class="card">
+        <div class="card-head"><h2>Assertividade por tema</h2>
+          <span class="small muted" style="margin-left:auto">recontato em até <span id="window">24</span>h = não resolvido</span></div>
+        <div class="card-body" id="themes"></div>
+      </section>
+    </div>
+
+    <section class="card">
+      <div class="card-head">
+        <h2>Avaliações recentes</h2>
+        <div class="filters">
+          <div class="seg" role="group" aria-label="Autor">
+            <button type="button" data-author="" class="on">Todas</button>
+            <button type="button" data-author="ia">IA</button>
+            <button type="button" data-author="humano">Especialistas</button>
+          </div>
+          <label class="small"><input type="checkbox" id="below"> Só abaixo de 70</label>
+        </div>
+      </div>
+      <div class="card-body" style="padding-top:4px" id="evals"></div>
+    </section>
+
+    <section class="card" id="batch">
+      <div class="card-head"><h2>Avaliação em lote</h2>
+        <span class="small muted" style="margin-left:auto">CSV com até 100 linhas · separador vírgula ou ponto e vírgula</span></div>
+      <div class="card-body">
+        <div class="modes">
+          <div class="mode"><strong>Replay</strong>Coluna <code>mensagem</code> (e, opcional, <code>triagem_esperada</code>,
+            <code>agentes_esperados</code>). Cada mensagem passa pelo sistema e a resposta é avaliada.
+            <a href="/static/exemplos/replay.csv" download>Baixar exemplo</a></div>
+          <div class="mode"><strong>Respostas já dadas</strong>Colunas <code>mensagem</code> e <code>resposta</code>
+            (e, opcional, <code>especialista</code>). Só o avaliador de DNA roda: serve para atendimentos humanos.
+            <a href="/static/exemplos/respostas_especialistas.csv" download>Baixar exemplo</a></div>
+          <div class="mode"><strong>Perguntas aleatórias</strong>Sorteia perguntas de um pool de 60 (produtos, conta,
+            autosserviço, placares, classificação, clima, câmbio, segurança) e roda o replay com a rota esperada.
+            <a href="/static/exemplos/pool_perguntas.csv" download>Ver o pool</a>
+            <form class="upload" id="pool-form" style="margin-top:8px">
+              <div class="field" style="width:110px"><label for="pool-n">Quantas</label>
+                <input type="number" id="pool-n" min="1" max="50" value="10"></div>
+              <button class="btn" type="submit" id="pool-run">Sortear e rodar</button>
+            </form></div>
+        </div>
+        <form class="upload" id="batch-form">
+          <div class="field" style="flex:1;min-width:240px">
+            <label for="batch-file">Arquivo CSV</label>
+            <input type="file" id="batch-file" accept=".csv,text/csv">
+          </div>
+          <button class="btn primary" type="submit" id="batch-run">Rodar avaliação</button>
+        </form>
+        <div class="error-text" id="batch-error" role="alert"></div>
+        <div id="batch-status"></div>
+        <div id="batch-result"></div>
+        <div style="margin-top:14px" id="batch-history"></div>
+      </div>
+    </section>
+  </main>
+
+  <script src="/static/common.js"></script>
+  <script src="/static/qualidade.js"></script>
+</body>
+</html>

@@ -47,7 +47,12 @@ _judge_llm: LLM | None = None
 def get_llm() -> LLM:
     global _agent_llm
     if _agent_llm is None:
-        _agent_llm = LangChainLLM(settings.llm_model, settings.llm_provider)
+        if settings.offline_mode:
+            from app.offline import FakeLLM
+
+            _agent_llm = FakeLLM()
+        else:
+            _agent_llm = LangChainLLM(settings.llm_model, settings.llm_provider)
     return _agent_llm
 
 
@@ -55,7 +60,12 @@ def get_judge_llm() -> LLM:
     """LLM do avaliador: modelo separado do gerador, para não virar autoavaliação."""
     global _judge_llm
     if _judge_llm is None:
-        _judge_llm = LangChainLLM(settings.judge_model, settings.judge_provider)
+        if settings.offline_mode:
+            from app.offline import FakeLLM
+
+            _judge_llm = FakeLLM()
+        else:
+            _judge_llm = LangChainLLM(settings.judge_model, settings.judge_provider)
     return _judge_llm
 
 
