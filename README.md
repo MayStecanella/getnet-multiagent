@@ -7,7 +7,7 @@ A solução é uma API conteinerizada com três telas:
 - **Especialista:** fila de transbordo (quando o cliente diz que não resolveu), histórico e o que a IA já fez.
 - **Qualidade:** DNA por pilar da IA e dos especialistas, assertividade por recontato, transbordo e avaliação em lote off-line por CSV.
 
-**Vídeo de apresentação:** _(link)_ · **Versão publicada:** _(link do Render)_
+   **Vídeo de apresentação:** _(link)_ · **Versão publicada:** https://getnet-multiagent.onrender.com (acesso com código; solicite à autora)
 
 ## Sumário
 
